@@ -400,6 +400,7 @@ Group by t1.branch_id, t1.manager_id;
 select * from branch_report;
 ```
 
+![image alt](employees.png)
 
 ### Remarks:
 1. Manager E109 oversees Branches B001, B002, and B003, which together generated a total revenue of $143.5. Branch B001 is the top performer under E109, with $111.5 in revenue. Manager E110 manages Branches B004 and B005, which together generated $76.5 in revenue. Branch B005 earned $50, making it the highest revenue generator under E110.
@@ -440,7 +441,7 @@ Group by emp.emp_name, emp.emp_id
 Order by no_books_processed desc;
 ```
 
-![image alt](74b4945a-dd01-4cc2-81b6-d3edf39410ce.png)
+![image alt](employees.png)
 
 ### Remarks: 
 Laura Martinez and Michelle Ramirez processed the most books (6 each), followed by Jessica Taylor, Sarah Brown, and Emily Davis (4 each).Mike Johnson processed the fewest, with just 1 book.
