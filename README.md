@@ -401,7 +401,7 @@ select * from branch_report;
 ```
 
 
-### Remarks
+### Remarks:
 1. Manager E109 oversees Branches B001, B002, and B003, which together generated a total revenue of $143.5. Branch B001 is the top performer under E109, with $111.5 in revenue. Manager E110 manages Branches B004 and B005, which together generated $76.5 in revenue. Branch B005 earned $50, making it the highest revenue generator under E110.
 2. E109's branches outperform E110's in terms of total revenue. Branch B001 stands out as the single most profitable branch. Returns are highest at Branch B001 (9) and lowest (0) at Branches B002 and B003, suggesting different return behaviors or product types.
 
@@ -440,13 +440,14 @@ Group by emp.emp_name, emp.emp_id
 Order by no_books_processed desc;
 ```
 
+![image alt](74b4945a-dd01-4cc2-81b6-d3edf39410ce.png)
+
+### Remarks: 
+Laura Martinez and Michelle Ramirez processed the most books (6 each), followed by Jessica Taylor, Sarah Brown, and Emily Davis (4 each).Mike Johnson processed the fewest, with just 1 book.
+Overall, book processing activity is concentrated among a few top performers.
 
 
-**Task 18: Identify Members Issuing High-Risk Books**  
-Write a query to identify members who have issued books more than twice with the status "damaged" in the books table. Display the member name, book title, and the number of times they've issued damaged books.    
-
-
-**Task 19: Stored Procedure**
+**Task 18: Stored Procedure**
 Objective:
 Create a stored procedure to manage the status of books in a library system.
 Description:
@@ -458,42 +459,42 @@ If the book is not available (status = 'no'), the procedure should return an err
 
 ```sql
 
-CREATE OR REPLACE PROCEDURE issue_book(p_issued_id VARCHAR(10), p_issued_member_id VARCHAR(30), p_issued_book_isbn VARCHAR(30), p_issued_emp_id VARCHAR(10))
-LANGUAGE plpgsql
-AS $$
+Create or Replace Procedure issue_book(p_issued_id Varchar(10), p_issued_member_id Varchar (10), p_issued_book_isbn Varchar(25), p_issued_emp_id Varchar(10))
+Language plpgsql
+As $$
 
-DECLARE
--- all the variabable
-    v_status VARCHAR(10);
+Declare
+-- all the variables
+	v_status Varchar(15);
 
-BEGIN
--- all the code
-    -- checking if book is available 'yes'
-    SELECT 
-        status 
-        INTO
-        v_status
-    FROM books
-    WHERE isbn = p_issued_book_isbn;
+Begin
+-- all the code and logic
+	--checking if book is available 'yes'
+	Select 
+		status 
+		Into
+		v_status
+	From books 
+	Where isbn = p_issued_book_isbn;
 
-    IF v_status = 'yes' THEN
+	If v_status = 'yes' then
+	
+		Insert Into issued_status(issued_id,issued_member_id, issued_date, issued_book_isbn, issued_emp_id)
+		Values 
+			(p_issued_id, p_issued_member_id, current_date, p_issued_book_isbn, p_issued_emp_id);
 
-        INSERT INTO issued_status(issued_id, issued_member_id, issued_date, issued_book_isbn, issued_emp_id)
-        VALUES
-        (p_issued_id, p_issued_member_id, CURRENT_DATE, p_issued_book_isbn, p_issued_emp_id);
+		Update books
+			Set status = 'no'
+		Where isbn = p_issued_book_isbn;
 
-        UPDATE books
-            SET status = 'no'
-        WHERE isbn = p_issued_book_isbn;
+		Raise Notice 'Book records added successfully for book isbn: %', p_issued_book_isbn;
+	Else
+		Raise Notice 'Sorry the book you have requested is unavailable book isbn: %', p_issued_book_isbn;	
+	End if;
 
-        RAISE NOTICE 'Book records added successfully for book isbn : %', p_issued_book_isbn;
-
-
-    ELSE
-        RAISE NOTICE 'Sorry to inform you the book you have requested is unavailable book_isbn: %', p_issued_book_isbn;
-    END IF;
-END;
+End;
 $$
+
 
 -- Testing The function
 SELECT * FROM books;
@@ -509,50 +510,33 @@ WHERE isbn = '978-0-375-41398-8'
 
 ```
 
-
-
-**Task 20: Create Table As Select (CTAS)**
-Objective: Create a CTAS (Create Table As Select) query to identify overdue books and calculate fines.
-
-Description: Write a CTAS query to create a new table that lists each member and the books they have issued but not returned within 30 days. The table should include:
-    The number of overdue books.
-    The total fines, with each day's fine calculated at $0.50.
-    The number of books issued by each member.
-    The resulting table should show:
-    Member ID
-    Number of overdue books
-    Total fines
-
-
-
 ## Reports
+**Database Structure**: Created tables: books, members, employees, issued_status, return_status, and branch.
+Established relationships using foreign key constraints to ensure data integrity.
 
-- **Database Schema**: Detailed table structures and relationships.
-- **Data Analysis**: Insights into book categories, employee salaries, member registration trends, and issued books.
-- **Summary Reports**: Aggregated data on high-demand books and employee performance.
+**Core Functionalities**: Automated book issuance and return processes using stored procedures (issue_book and add_return_records).
+Updated book statuses dynamically based on issuance and returns.
+
+**Analytical Queries**:Identified overdue books, active members, and top-performing employees.
+Generated branch performance reports, including issued/returned books and total revenue.
+
+**Advanced Features**: Used CTAS to create summary tables (e.g., active members, branch reports).
+Retrieved insights like rental income by category and books not yet returned.
+
+##### Key Insights:
+- Operational Efficiency: Automated processes reduce manual errors and improve workflow.
+- Customer Engagement: Identified active members and overdue books for better service.
+- Revenue Optimization: Highlighted high-performing book categories for inventory decisions.
+- Employee Performance: Recognized top employees for accountability and rewards.
+
+
+
+
+
+
 
 ## Conclusion
 
-This project demonstrates the application of SQL skills in creating and managing a library management system. It includes database setup, data manipulation, and advanced querying, providing a solid foundation for data management and analysis.
+This project demonstrates the effective use of SQL for managing library operations, automating workflows, and generating actionable insights to improve decision-making.
 
-## How to Use
 
-1. **Clone the Repository**: Clone this repository to your local machine.
-   ```sh
-   git clone https://github.com/najirh/Library-System-Management---P2.git
-   ```
-
-2. **Set Up the Database**: Execute the SQL scripts in the `database_setup.sql` file to create and populate the database.
-3. **Run the Queries**: Use the SQL queries in the `analysis_queries.sql` file to perform the analysis.
-4. **Explore and Modify**: Customize the queries as needed to explore different aspects of the data or answer additional questions.
-
-## Author - Zero Analyst
-
-This project showcases SQL skills essential for database management and analysis. For more content on SQL and data analysis, connect with me through the following channels:
-
-- **YouTube**: [Subscribe to my channel for tutorials and insights](https://www.youtube.com/@zero_analyst)
-- **Instagram**: [Follow me for daily tips and updates](https://www.instagram.com/zero_analyst/)
-- **LinkedIn**: [Connect with me professionally](https://www.linkedin.com/in/najirr)
-- **Discord**: [Join our community for learning and collaboration](https://discord.gg/36h5f2Z5PK)
-
-Thank you for your interest in this project!
