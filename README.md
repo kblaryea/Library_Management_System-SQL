@@ -399,8 +399,7 @@ Group by t1.branch_id, t1.manager_id;
 
 select * from branch_report;
 ```
-![ERD](TR by branch and manager.png)
-TR by branch and manager.png
+
 
 ### Remarks
 1. Manager E109 oversees Branches B001, B002, and B003, which together generated a total revenue of $143.5. Branch B001 is the top performer under E109, with $111.5 in revenue. Manager E110 manages Branches B004 and B005, which together generated $76.5 in revenue. Branch B005 earned $50, making it the highest revenue generator under E110.
@@ -408,22 +407,21 @@ TR by branch and manager.png
 
 
 **Task 16: CTAS: Create a Table of Active Members**  
-Use the CREATE TABLE AS (CTAS) statement to create a new table active_members containing members who have issued at least one book in the last 2 months.
+Use the CREATE TABLE AS (CTAS) statement to create a new table active_members containing members who have issued at least one book in the last 14 months.
 
 ```sql
 
-CREATE TABLE active_members
-AS
-SELECT * FROM members
-WHERE member_id IN (SELECT 
-                        DISTINCT issued_member_id   
-                    FROM issued_status
-                    WHERE 
-                        issued_date >= CURRENT_DATE - INTERVAL '2 month'
-                    )
-;
+Create table active_members
+As
+Select * from members
+Where member_id in (Select
+                          Distinct issued_member_id
+			  From issued_status
+		    Where
+			  issued_date >= current_date - interval '14 months'
+					)
 
-SELECT * FROM active_members;
+select * from active_members;
 
 ```
 
@@ -432,19 +430,17 @@ SELECT * FROM active_members;
 Write a query to find the top 3 employees who have processed the most book issues. Display the employee name, number of books processed, and their branch.
 
 ```sql
-SELECT 
-    e.emp_name,
-    b.*,
-    COUNT(ist.issued_id) as no_book_issued
-FROM issued_status as ist
-JOIN
-employees as e
-ON e.emp_id = ist.issued_emp_id
-JOIN
-branch as b
-ON e.branch_id = b.branch_id
-GROUP BY 1, 2
+Select emp.emp_name, emp.emp_id, count(ist.issued_id) as no_books_processed
+From issued_status as ist
+Join employees as emp
+on ist.issued_emp_id = emp.emp_id
+
+Group by emp.emp_name, emp.emp_id
+
+Order by no_books_processed desc;
 ```
+
+
 
 **Task 18: Identify Members Issuing High-Risk Books**  
 Write a query to identify members who have issued books more than twice with the status "damaged" in the books table. Display the member name, book title, and the number of times they've issued damaged books.    
